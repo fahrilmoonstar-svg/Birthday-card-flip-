@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahril Project | Digital Birthday Card</title>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Nobile:400italic,700italic);
+
+        :root {
+            --border-color: #f9f9f9;
+            --vanilla: #FF69B4;
+            --chocolate: #9B59B6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #FF6B6B 0%, #1a1f3a 100%);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Developer Credit Ribbon */
+        .dev-credit {
+            position: fixed;
+            top: 20px;
+            right: -30px;
+            background: #00ff9d;
+            color: #0a0e27;
+            padding: 8px 40px;
+            font-size: 0.8em;
+            font-weight: bold;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .dev-credit a {
+            color: #0a0e27;
+            text-decoration: none;
+        }
+
+        /* Developer Badge */
+        .dev-badge {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(5px);
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #00ff9d;
+            border: 1px solid #00ff9d;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid #00ff9d;
+            color: #00ff9d;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #00ff9d;
+            color: #0a0e27;
+            transform: scale(1.05);
+        }
+
+        /* Card Container */
+        .card-container {
+            perspective: 1200px;
+            width: 390px;
+            height: 550px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+        }
+
+        /* Posisi halaman */
+        .card.show-page1 { transform: rotateY(0deg); }
+        .card.show-page2 { transform: rotateY(-120deg); }
+        .card.show-page3 { transform: rotateY(-240deg); }
+
+        /* Style semua halaman */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Halaman 1 - Special Delivery (depan) */
+        .page1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: rotateY(0deg);
+            color: white;
+        }
+
+        .page1 h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .page1 .developer-name {
+            color: #00ff9d;
+            font-family: monospace;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .page1 .github-link {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 25px;
+            margin-top: 20px;
+            font-size: 0.8em;
+        }
+
+        .page1 .github-link a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Halaman 2 - Happy Birthday + Kue */
+        .page2 {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            transform: rotateY(120deg);
+        }
+
+        .page2 #head {
+            font-family: 'Nobile', sans-serif;
+            font-size: 1.8em;
+            margin: 15px auto;
+            background: linear-gradient(135deg, #ed0d7d, #E74C3C, #ff6b6b, #d14119, #e33606);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page2 .text-container > div {
+            font-family: 'Nobile', sans-serif;
+            color: #580803;
+            font-style: italic;
+            font-size: 1em;
+        }
+
+        .page2 p {
+            font-size: 1em;
+            font-family: 'Nobile', sans-serif;
+            color: #580803;
+            font-style: italic;
+        }
+
+        /* Halaman 3 - Kata Kata Ucapan */
+        .page3 {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            transform: rotateY(240deg);
+            color: #333;
+        }
+
+        .page3 h3 {
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+
+        .page3 .wish-text {
+            font-family: 'Nobile', sans-serif;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 20px 0;
+            padding: 0 10px;
+        }
+
+        .page3 .pray {
+            font-style: italic;
+            color: #9B59B6;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .page3 .heart {
+            font-size: 2em;
+            margin-top: 20px;
+            animation: heartbeat 1s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Hover Text */
+        .hover-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Nobile', sans-serif;
+            font-size: 14px;
+            color: white;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 30px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* Cake Styles */
+        .cake {
+            position: relative;
+            width: 130px;
+            height: 100px;
+            margin: 15px auto;
+        }
+
+        .layer-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: #8B4513;
+            border-radius: 10px;
+        }
+
+        .layer-middle {
+            position: absolute;
+            bottom: 40px;
+            width: 90%;
+            left: 5%;
+            height: 30px;
+            background: #D2691E;
+            border-radius: 8px;
+        }
+
+        .layer-top {
+            position: absolute;
+            bottom: 70px;
+            width: 80%;
+            left: 10%;
+            height: 25px;
+            background: #DEB887;
+            border-radius: 8px;
+        }
+
+        .icing {
+            position: absolute;
+            bottom: 70px;
+            width: 86%;
+            left: 7%;
+            height: 10px;
+            background: var(--vanilla);
+            border-radius: 5px;
+        }
+
+        .drip {
+            display: block;
+            width: 20px;
+            height: 24px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            background-color: var(--vanilla);
+            position: absolute;
+        }
+
+        .drip1 {
+            top: 22px;
+            left: 2px;
+            transform: skewY(15deg);
+            height: 19.2px;
+            width: 16px;
+        }
+
+        .drip2 {
+            top: 30px;
+            left: 72.4px;
+            transform: skewY(-15deg);
+            height: 19.2px;
+            width: 16px;
+        }
+
+        .drip3 {
+            top: 33.6px;
+            left: 36px;
+            width: 32px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            height: 24px;
+        }
+
+        .candle {
+            background-color: var(--chocolate);
+            width: 6.4px;
+            height: 20px;
+            border-radius: 8px 8px 4px 4px;
+            top: -8px;
+            left: 50%;
+            margin-left: -3.2px;
+            position: absolute;
+        }
+
+        .candle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6.4px;
+            height: 3.2px;
+            border-radius: 50%;
+            background-color: #FFA500;
+        }
+
+        .flame {
+            position: absolute;
+            background-color: #FF6B35;
+            width: 6px;
+            height: 14px;
+            border-radius: 10px 10px 10px 10px / 25px 25px 10px 10px;
+            top: -13.6px;
+            left: 50%;
+            margin-left: -3px;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.5), 0 0 20px rgba(255, 107, 53, 0.5), 0 0 60px rgba(255, 107, 53, 0.5), 0 0 80px rgba(255, 107, 53, 0.5);
+            transform-origin: 50% 90%;
+            animation: flicker 1s ease-in-out infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 0.8; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(1.1); }
+        }
+
+        .text-container {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.6em;
+            color: rgba(255,255,255,0.4);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @media (max-width: 480px) {
+            .card-container {
+                width: 330px;
+                height: 490px;
+            }
+            .page1 h3 { font-size: 1.4em; }
+            .page2 #head { font-size: 1.5em; }
+            .page3 h3 { font-size: 1.3em; }
+            .page3 .wish-text { font-size: 0.9em; }
+            .cake { transform: scale(0.85); }
+            .dev-badge { font-size: 8px; padding: 4px 12px; top: 10px; }
+            .dev-credit { font-size: 0.5em; padding: 4px 30px; top: 12px; right: -35px; }
+            .nav-btn { padding: 5px 15px; font-size: 10px; }
+            .footer { bottom: 65px; font-size: 0.5em; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Developer Credit Ribbon -->
+    <div class="dev-credit">
+        <a href="https://github.com/fahrilmoonstar-svg" target="_blank">⚡ Fahril Project</a>
+    </div>
+
+    <!-- Developer Badge -->
+    <div class="dev-badge">
+        🔐 Developed by Fahril | Cybersecurity Developer
+    </div>
+
+    <div class="card-container">
+        <div class="card" id="birthdayCard">
+            <!-- Halaman 1: Special Delivery -->
+            <div class="page page1">
+                <div class="hover-text">✨ Tap / Hover To Open ✨</div>
+                <h3>🎁 SPECIAL DELIVERY 🎁</h3>
+                <p>Digital Birthday Card</p>
+                <div class="developer-name">
+                    ⚡ Created with 💻 by<br>
+                    <strong>Fahril</strong>
+                </div>
+                <div class="github-link">
+                    <a href="https://github.com/fahrilmoonstar-svg" target="_blank">
+                        📂 github.com/fahrilmoonstar-svg
+                    </a>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.8em;">✨ Security • Creativity • Code ✨</p>
+            </div>
+
+            <!-- Halaman 2: Happy Birthday + Kue -->
+            <div class="page page2">
+                <div class="cake">
+                    <div class="layer-bottom"></div>
+                    <div class="layer-middle"></div>
+                    <div class="layer-top"></div>
+                    <div class="icing"></div>
+                    <div class="drip drip1"></div>
+                    <div class="drip drip2"></div>
+                    <div class="drip drip3"></div>
+                    <div class="candle">
+                        <div class="flame"></div>
+                    </div>
+                </div>
+                <div class="text-container">
+                    <p id="head">🎊 Happy Birthday Bestie! 🎊</p>
+                    <div>Your first digital birthday card!<br>✨ Developed Just For You ✨</div>
+                    <p>Enjoy and Have It A Blast! 🎉</p>
+                </div>
+            </div>
+
+            <!-- Halaman 3: Kata Kata Ucapan -->
+            <div class="page page3">
+                <h3>💝 Untuk Kamu 💝</h3>
+                <div class="wish-text">
+                    "Semoga di usia yang baru ini,<br>
+                    kamu semakin <strong>bahagia</strong>,<br>
+                    semakin <strong>sukses</strong>,<br>
+                    dan selalu diberikan <strong>kesehatan</strong>.<br>
+                    Panjang umur, dilancarkan rezekinya,<br>
+                    dan semua impianmu tercapai!"
+                </div>
+                <div class="pray">
+                    🙏 Amin 🙏
+                </div>
+                <div class="heart">
+                    💝🎂💝
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="showPage(1)">📦 Sampul</button>
+        <button class="nav-btn" onclick="showPage(2)">🎂 Birthday</button>
+        <button class="nav-btn" onclick="showPage(3)">💝 Ucapan</button>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 Fahril Project | Cybersecurity & Creative Developer</p>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const card = document.getElementById('birthdayCard');
+        
+        // Untuk swipe di HP
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        function showPage(page) {
+            currentPage = page;
+            card.className = `card show-page${page}`;
+        }
+        
+        function nextPage() {
+            if (currentPage < 3) {
+                showPage(currentPage + 1);
+            } else {
+                showPage(1);
+            }
+        }
+        
+        function prevPage() {
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+            } else {
+                showPage(3);
+            }
+        }
+        
+        // Tap pada card untuk next page
+        card.addEventListener('click', (e) => {
+            // Jangan trigger jika klik tombol navigasi
+            if (!e.target.classList.contains('nav-btn')) {
+                nextPage();
+            }
+        });
+        
+        // Swipe gesture untuk HP
+        card.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        card.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextPage(); // Swipe kiri
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevPage(); // Swipe kanan
+            }
+        }
+        
+        // Tampilkan halaman 1 pertama kali
+        showPage(1);
+    </script>
+</body>
+</html>
